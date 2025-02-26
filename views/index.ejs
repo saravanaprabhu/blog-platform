@@ -1,0 +1,598 @@
+<!-- File: views/index.ejs - Homepage -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-8">
+        <h1>Latest Posts</h1>
+        
+        <% if (blogs.length === 0) { %>
+          <p>No blogs found.</p>
+        <% } else { %>
+          <% blogs.forEach(blog => { %>
+            <div class="card mb-4">
+              <div class="card-body">
+                <h2 class="card-title"><a href="/blogs/<%= blog.id %>"><%= blog.title %></a></h2>
+                <p class="card-text text-muted">
+                  By <a href="/users/<%= blog.username %>"><%= blog.username %></a> 
+                  in <span class="badge bg-secondary"><%= blog.publication_name %></span>
+                  on <%= new Date(blog.created_at).toLocaleDateString() %>
+                </p>
+                <p class="card-text"><%= blog.summary %></p>
+                <a href="/blogs/<%= blog.id %>" class="btn btn-primary">Read More</a>
+              </div>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Search</h5>
+            <form action="/search" method="GET">
+              <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Search blogs...">
+                <button class="btn btn-outline-primary" type="submit">Search</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <div class="card mt-4">
+          <div class="card-body">
+            <h5 class="card-title">Join Our Platform</h5>
+            <p>Share your thoughts with the world!</p>
+            <% if (!user) { %>
+              <a href="/register" class="btn btn-success mb-2 w-100">Register</a>
+              <a href="/login" class="btn btn-outline-primary w-100">Login</a>
+            <% } else { %>
+              <a href="/blogs/new" class="btn btn-success mb-2 w-100">Write a Blog</a>
+              <a href="/dashboard" class="btn btn-outline-primary w-100">My Dashboard</a>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+<!-- File: views/login.ejs - Login page -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Blog Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <div class="container mt-4">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="mb-0">Login</h3>
+          </div>
+          <div class="card-body">
+            <% if (error) { %>
+              <div class="alert alert-danger"><%= error %></div>
+            <% } %>
+            <form action="/login" method="POST">
+              <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <hr>
+            <p>Don't have an account? <a href="/register">Register here</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+<!-- File: views/register.ejs - Registration page -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - Blog Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <div class="container mt-4">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="mb-0">Register</h3>
+          </div>
+          <div class="card-body">
+            <% if (error) { %>
+              <div class="alert alert-danger"><%= error %></div>
+            <% } %>
+            <form action="/register" method="POST">
+              <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+              </div>
+              <button type="submit" class="btn btn-success">Register</button>
+            </form>
+            <hr>
+            <p>Already have an account? <a href="/login">Login here</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+<!-- File: views/dashboard.ejs - User Dashboard -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Blog Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Welcome, <%= user.username %></h5>
+            <p class="text-muted">Total blogs: <%= blogCount %></p>
+            <a href="/blogs/new" class="btn btn-success w-100 mb-2">Create New Blog</a>
+            <a href="/users/<%= user.username %>" class="btn btn-outline-primary w-100">View Public Profile</a>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Your Publications</h5>
+          </div>
+          <ul class="list-group list-group-flush">
+            <% publications.forEach(publication => { %>
+              <li class="list-group-item"><%= publication.name %></li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="col-md-9">
+        <h2>Your Blogs</h2>
+        
+        <% if (blogs.length === 0) { %>
+          <div class="alert alert-info">
+            You haven't written any blogs yet. <a href="/blogs/new">Create your first blog</a>.
+          </div>
+        <% } else { %>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Publication</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% blogs.forEach(blog => { %>
+                  <tr>
+                    <td><a href="/blogs/<%= blog.id %>"><%= blog.title %></a></td>
+                    <td><%= blog.publication_name %></td>
+                    <td>
+                      <span class="badge <%= blog.status === 'published' ? 'bg-success' : 'bg-warning' %>">
+                        <%= blog.status %>
+                      </span>
+                    </td>
+                    <td><%= new Date(blog.created_at).toLocaleDateString() %></td>
+                    <td>
+                      <a href="/blogs/<%= blog.id %>/edit" class="btn btn-sm btn-primary">Edit</a>
+                      <form action="/blogs/<%= blog.id %>/delete" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+<!-- File: views/blog.ejs - View a blog post -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= blog.title %> - Blog Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-8">
+        <article>
+          <header>
+            <h1><%= blog.title %></h1>
+            <p class="text-muted">
+              By <a href="/users/<%= blog.username %>"><%= blog.username %></a> 
+              in <span class="badge bg-secondary"><%= blog.publication_name %></span>
+              on <%= new Date(blog.created_at).toLocaleDateString() %>
+              • <%= blog.view_count %> views
+            </p>
+          </header>
+          
+          <div class="mb-4">
+            <% if (images && images.length > 0) { %>
+              <img src="/<%= images[0].image_ref %>" alt="<%= images[0].alt_text %>" class="img-fluid rounded">
+            <% } %>
+          </div>
+          
+          <div class="blog-content">
+            <%= blog.content %>
+          </div>
+          
+          <% if (isOwner) { %>
+            <div class="mt-4 pt-3 border-top">
+              <a href="/blogs/<%= blog.id %>/edit" class="btn btn-primary">Edit</a>
+              <form action="/blogs/<%= blog.id %>/delete" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+              </form>
+            </div>
+          <% } %>
+        </article>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title">About the Author</h5>
+            <p><a href="/users/<%= blog.username %>"><%= blog.username %></a></p>
+            <a href="/users/<%= blog.username %>" class="btn btn-outline-primary">View Profile</a>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Publication</h5>
+            <p><%= blog.publication_name %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+<!-- File: views/blog_form.ejs - Create/Edit blog form -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= isEdit ? 'Edit' : 'Create' %> Blog - Blog Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <div class="container mt-4">
+    <div class="row justify-content-center">
+      <div class="col-md-10">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="mb-0"><%= isEdit ? 'Edit' : 'Create' %> Blog</h3>
+          </div>
+          <div class="card-body">
+            <form action="<%= isEdit ? '/blogs/' + blog.id : '/blogs' %>" method="POST" enctype="multipart/form-data">
+              <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="title" name="title" value="<%= blog ? blog.title : '' %>" required>
+              </div>
+              
+              <div class="mb-3">
+                <label for="publication_id" class="form-label">Publication</label>
+                <select class="form-select" id="publication_id" name="publication_id" required>
+                  <% publications.forEach(publication => { %>
+                    <option value="<%= publication.id %>" <%= blog && blog.publication_id == publication.id ? 'selected' : '' %>>
+                      <%= publication.name %>
+                    </option>
+                  <% }) %>
+                </select>
+              </div>
+              
+              <div class="mb-3">
+                <label for="summary" class="form-label">Summary</label>
+                <textarea class="form-control" id="summary" name="summary" rows="2"><%= blog ? blog.summary : '' %></textarea>
+              </div>
+              
+              <div class="mb-3">
+                <label for="content" class="form-label">Content</label>
+                <textarea class="form-control" id="content" name="content" rows="10" required><%= blog ? blog.content : '' %></textarea>
+              </div>
+              
+              <div class="mb-3">
+                <label for="image" class="form-label">Featured Image</label>
+                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                <div class="form-text">Optional. Max size: 5MB</div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                  <option value="draft" <%= blog && blog.status === 'draft' ? 'selected' : '' %>>Draft</option>
+                  <option value="published" <%= blog && blog.status === 'published' ? 'selected' : '' %>>Published</option>
+                </select>
+              </div>
+              
+              <button type="submit" class="btn btn-primary"><%= isEdit ? 'Update' : 'Create' %> Blog</button>
+              <a href="/dashboard" class="btn btn-outline-secondary">Cancel</a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+<!-- File: views/profile.ejs - User Profile -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= profile.username %>'s Profile - Blog Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="card mb-4">
+          <div class="card-body text-center">
+            <h3><%= profile.username %></h3>
+            <p class="text-muted">
+              <span class="badge bg-primary"><%= blogCount %> Blogs</span>
+            </p>
+            <% if (isOwner) { %>
+              <a href="/dashboard" class="btn btn-outline-primary btn-sm w-100">Dashboard</a>
+            <% } %>
+          </div>
+        </div>
+        
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Publications</h5>
+          </div>
+          <ul class="list-group list-group-flush">
+            <% publications.forEach(publication => { %>
+              <li class="list-group-item">
+                <h6 class="mb-1"><%= publication.name %></h6>
+                <p class="small text-muted mb-0"><%= publication.description %></p>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="col-md-9">
+        <h2><%= profile.username %>'s Blogs</h2>
+        
+        <% if (blogs.length === 0) { %>
+          <div class="alert alert-info">
+            This user hasn't published any blogs yet.
+          </div>
+        <% } else { %>
+          <% blogs.forEach(blog => { %>
+            <div class="card mb-4">
+              <div class="card-body">
+                <h3 class="card-title"><a href="/blogs/<%= blog.id %>"><%= blog.title %></a></h3>
+                <p class="card-text text-muted">
+                  <span class="badge bg-secondary"><%= blog.publication_name %></span>
+                  • <%= new Date(blog.created_at).toLocaleDateString() %>
+                </p>
+                <p class="card-text"><%= blog.summary %></p>
+                <a href="/blogs/<%= blog.id %>" class="btn btn-primary btn-sm">Read More</a>
+              </div>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+<!-- File: views/search_results.ejs - Search Results -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Results - Blog Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-8">
+        <h1>Search Results for "<%= query %>"</h1>
+        
+        <% if (results.length === 0) { %>
+          <div class="alert alert-info">
+            No results found for "<%= query %>".
+          </div>
+        <% } else { %>
+          <p class="text-muted mb-4">Found <%= results.length %> results</p>
+          
+          <% results.forEach(blog => { %>
+            <div class="card mb-4">
+              <div class="card-body">
+                <h2 class="card-title"><a href="/blogs/<%= blog.id %>"><%= blog.title %></a></h2>
+                <p class="card-text text-muted">
+                  By <a href="/users/<%= blog.username %>"><%= blog.username %></a> 
+                  in <span class="badge bg-secondary"><%= blog.publication_name %></span>
+                  on <%= new Date(blog.created_at).toLocaleDateString() %>
+                </p>
+                <p class="card-text"><%= blog.summary %></p>
+                <a href="/blogs/<%= blog.id %>" class="btn btn-primary">Read More</a>
+              </div>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Refine Search</h5>
+            <form action="/search" method="GET">
+              <div class="input-group">
+                <input type="text" name="q" class="form-control" value="<%= query %>" placeholder="Search blogs...">
+                <button class="btn btn-outline-primary" type="submit">Search</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+<!-- File: views/partials/header.ejs - Header partial -->
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">Blog Platform</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+        </ul>
+        <form class="d-flex me-2" action="/search" method="GET">
+          <input class="form-control me-2" type="search" placeholder="Search" name="q">
+          <button class="btn btn-outline-light" type="submit">Search</button>
+        </form>
+        <ul class="navbar-nav">
+          <% if (user) { %>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <%= user.username %>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="/dashboard">Dashboard</a></li>
+                <li><a class="dropdown-item" href="/blogs/new">Write Blog</a></li>
+                <li><a class="dropdown-item" href="/users/<%= user.username %>">My Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/logout">Logout</a></li>
+              </ul>
+            </li>
+          <% } else { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/login">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/register">Register</a>
+            </li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- File: views/partials/footer.ejs - Footer partial -->
+<footer class="bg-light text-center p-4 mt-5">
+  <div class="container">
+    <p class="mb-0 text-muted">© 2025 Blog Platform. All rights reserved.</p>
+  </div>
+</footer>
